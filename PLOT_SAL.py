@@ -23,9 +23,10 @@ fcday=4
 lat = 65
 lon = 0
 dates_fcycle = pd.date_range(start='%s-%s-%s'%(fcyear,fcmonth,fcday), periods=1, freq="7D") # forecasts start Monday
+d = dates_fcycle[0].strftime('%Y-%m-%d')
 
 for idate in dates_fcycle: 
-
+   # d = idate.strftime('%Y-%m-%d')
     d = idate.strftime('%Y-%m-%d')
     dataopen_fc =stosgl.read_grib_cf_pf(dirbase_S2S,'forecast',d,lat,lon,var_short,cycle)
     dataopen_hc = stosgl.read_grib_cf_pf(dirbase_S2S,'hindcast',d,lat,lon,var_short,cycle)
