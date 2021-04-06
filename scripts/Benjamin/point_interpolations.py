@@ -16,7 +16,7 @@ from S2S.local_configuration import config
 #%% 
 # Define the target dates for interpolation. NB: Will use the nearest available dates.
 first_wedn = pd.to_datetime("2011-12-28")
-last_wedn = pd.to_datetime("2020-01-18") # NB: Change to "2020-12-23" when have forecasts
+last_wedn = pd.to_datetime("2020-12-23")
 
 #%% 
 # Define date range of climate data files. 
@@ -68,26 +68,26 @@ cast_type = 'cf'
 # Define objects that are reused
 grb_data_sst_dummy = read_grib_file(
     dirbase=dirbase, 
-    product='hindcast', # forecast
+    product='forecast',
     model_version=mdl_vrsn, 
     var_name_abbr='sst', 
     cast_type=cast_type, 
     date=dates_fc_cycle[0]
 ) 
 valid_points_sst = np.transpose(
-    np.isnan(grb_data_sst_dummy.variables['sst'].isel(step = 0, time = 0).data) == 0 
+    np.isnan(grb_data_sst_dummy.variables['sst'].isel(step = 0).data) == 0 
 ) # NB: Gridpp and xarray have opposite lat-lon axes
 in_points_sst = make_points_from_grb(grb_data_sst_dummy, valid_points_sst)
 
 grb_data_sav300_dummy = read_grib_file(
     dirbase=dirbase,
-    product='hindcast', # forecast
+    product='forecast',
     model_version=mdl_vrsn,
     var_name_abbr='sal',
     cast_type=cast_type,
     date=dates_fc_cycle[0]
 )
-valid_points_sav300 = np.transpose(np.isnan(grb_data_sav300_dummy.variables['sav300'].isel(step = 0, time = 0).data) == 0) # NB: Gridpp and xarray have opposite lat-lon axes
+valid_points_sav300 = np.transpose(np.isnan(grb_data_sav300_dummy.variables['sav300'].isel(step = 0).data) == 0) # NB: Gridpp and xarray have opposite lat-lon axes
 in_points_sav300 = make_points_from_grb(grb_data_sav300_dummy, valid_points_sav300)
 
 # Initialize empty xarray to insert in
@@ -111,14 +111,14 @@ for fc_src_dt in df_target['forecast_src_date'].unique(): # Iterate firstly over
     # ===========
     # Sea surface temperature
     # ===========
-    # grb_data_sst_fc = read_grib_file(
-    #     dirbase=dirbase, 
-    #     product='forecast', 
-    #     model_version=mdl_vrsn, 
-    #     var_name_abbr='sst', 
-    #     cast_type=cast_type, 
-    #     date=fc_src_dt
-    # )
+    grb_data_sst_fc = read_grib_file(
+        dirbase=dirbase, 
+        product='forecast', 
+        model_version=mdl_vrsn, 
+        var_name_abbr='sst', 
+        cast_type=cast_type, 
+        date=fc_src_dt
+    )
     grb_data_sst_hc = read_grib_file(
         dirbase=dirbase, 
         product='hindcast', 
@@ -157,14 +157,14 @@ for fc_src_dt in df_target['forecast_src_date'].unique(): # Iterate firstly over
     # ===========
     # Salinity
     # ===========
-    # grb_data_sav300_fc = read_grib_file(
-    #     dirbase=dirbase, 
-    #     product='forecast', 
-    #     model_version=mdl_vrsn, 
-    #     var_name_abbr='sal', 
-    #     cast_type=cast_type, 
-    #     date=fc_src_dt
-    # )
+    grb_data_sav300_fc = read_grib_file(
+        dirbase=dirbase, 
+        product='forecast', 
+        model_version=mdl_vrsn, 
+        var_name_abbr='sal', 
+        cast_type=cast_type, 
+        date=fc_src_dt
+    )
     grb_data_sav300_hc = read_grib_file(
         dirbase=dirbase, 
         product='hindcast', 
@@ -207,4 +207,3 @@ data_converted_cf.isel(step = 0).drop('step').to_dataframe().to_csv(
     f'climate_data_nsteps_{cast_type}_{df_target.date.iloc[0].date()}_{df_target.date.iloc[-1].date()}.csv'
 )
 
-#%%
