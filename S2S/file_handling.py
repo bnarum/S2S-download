@@ -9,11 +9,13 @@ def read_grib_file(
         var_name_abbr,
         cast_type,
         date,
+        verbosity = 1
 ):
     file_name = '_'.join([var_name_abbr, model_version, date.strftime('%Y-%m-%d'), cast_type, product]) + '.grb'
     file_path = os.path.join(dirbase, product, 'ECMWF', 'sfc', var_name_abbr, file_name)
 
-    print('reading file: ' + file_path)
+    if verbosity == 1:
+        print('reading file: ' + file_path)
     dataopen = xr.open_dataset(file_path, engine='cfgrib')
 
     return dataopen
